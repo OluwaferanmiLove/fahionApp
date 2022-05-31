@@ -1,18 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useContext } from 'react';
 import { Platform, StyleSheet, Text, View, StatusBar, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import Button from '../../components/Button';
-import CategoriesPill from '../../components/CategoriesPill';
-import CategoryCard from '../../components/CategoryCard';
 import Input from '../../components/Input';
 import StyleCard from '../../components/StyleCard';
 import { colors } from '../../constants/colors';
-import { categories, stylesList } from '../../constants/mockData';
+import { login } from '../../context/action';
+import { AppContext } from '../../context/AppContext';
 import { hp, wp } from '../../util/dimension';
-import { generateColor } from '../../util/randomColor';
 
 let statusBarHeight = Platform.select({ios: hp(45), android: StatusBar.currentHeight});
-function AdminLogin({navigation}) {
+function Signup({navigation}) {
+  const {state, dispatch} = useContext(AppContext);
+
+  const handleLogin = () => {
+    dispatch(login({userType: 'admin'}))
+    console.log(state)
+  }
+
   return (
     <View style={styles.main}>
       <StatusBar barStyle={'dark-content'} />
@@ -23,19 +28,20 @@ function AdminLogin({navigation}) {
               <Ionicons name={'arrow-back'} color={colors.secondaryDarker} size={wp(30)} />
             </View>
           </TouchableOpacity>
-          <View style={{marginLeft: wp(15)}}>
-            <Text style={styles.title}>Admin Login</Text>
-            {/* <Text style={styles.description}>This is admin login portal.</Text> */}
+          <View>
+            <Text style={styles.title}>Sign up</Text>
+            <Text style={styles.description}>Create account to access your personal space.</Text>
           </View>
         </View>
         <View style={styles.mainContent}>
           <Input label={'Email'} placeholder={'Email'} />
+          <Input label={'Username'} placeholder={'Username'} />
           <Input label={'Password'} marginTop={hp(26)}  placeholder={'**********'} />
           <Button
             marginTop={hp(40)}
             dark height={hp(50)}
-            title={'Login'}
-            onPress={() => navigation.navigate('AdminDashboard')}
+            title={'Signup'}
+            onPress={() => handleLogin()}
           />
         </View>
       </ScrollView>
@@ -112,4 +118,4 @@ export const styles = StyleSheet.create({
   }
 })
 
-export default AdminLogin;
+export default Signup;

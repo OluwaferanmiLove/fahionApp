@@ -1,6 +1,7 @@
 import {
   LOADING,
   LOGIN,
+  LOGOUT,
 } from "./action.type";
 
 export const reducer = (state, action) => {
@@ -16,6 +17,12 @@ export const reducer = (state, action) => {
         ...state,
         loggedin: true,
         user: action.payload,
+      }
+    case LOGOUT:
+      return {
+        ...state,
+        loggedin: false,
+        user: {},
       }
     default:
       return state

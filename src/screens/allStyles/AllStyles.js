@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Platform, StyleSheet, Text, View, StatusBar, ScrollView, FlatList, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import CategoriesPill from '../../components/CategoriesPill';
 import CategoryCard from '../../components/CategoryCard';
 import StyleCard from '../../components/StyleCard';
@@ -8,12 +8,16 @@ import { colors } from '../../constants/colors';
 import { categories, stylesList } from '../../constants/mockData';
 import { hp, wp } from '../../util/dimension';
 import { generateColor } from '../../util/randomColor';
+import AddStyleModal from '../Admin/components/AddStyleModal';
+import { AppContext } from '../../context/AppContext';
 import { collection, getFirestore, getDocs, doc, onSnapshot, query } from 'firebase/firestore';
 
-let statusBarHeight = Platform.select({ios: hp(45), android: StatusBar.currentHeight});
-function Category({navigation, route}) {
+let statusBarHeight = Platform.select({ ios: hp(45), android: StatusBar.currentHeight });
+function AllStyles({ navigation }) {
+  const [addStyleModal, setAddStyleModal] = useState(false);
   const [data, setData] = useState([]);
-  const categoryInfo = route.params;
+
+  const {state} = useContext(AppContext)
 
   const db = getFirestore();
 
@@ -26,11 +30,7 @@ function Category({navigation, route}) {
       querySnapshot.forEach((doc) => {
           data.push(doc.data());
       });
-
-      const newData = data.filter((item) => {
-        return item.categoryName = categoryInfo?.categoryName
-      })
-      setData(newData);
+      setData(data);
     },
     (error) => {
       console.log(error.message);
@@ -42,16 +42,16 @@ function Category({navigation, route}) {
   return (
     <View style={styles.main}>
       <StatusBar barStyle={'dark-content'} />
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{ flex: 1 }}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <View style={styles.backBtnContainer}>
               <Ionicons name={'arrow-back'} color={colors.secondaryDarker} size={wp(30)} />
             </View>
           </TouchableOpacity>
-          <View style={{marginLeft: wp(15), flex: 1}}>
-            <Text style={styles.title}>{categoryInfo.categoryName}</Text>
-            <Text style={styles.description}>{categoryInfo.categoryDescription}</Text>
+          <View style={{ marginLeft: wp(15) }}>
+            <Text style={styles.title}>All Style</Text>
+            {/* <Text style={styles.description}>Style description.</Text> */}
           </View>
         </View>
         <View style={styles.sectionStyle}>
@@ -59,23 +59,33 @@ function Category({navigation, route}) {
             <Text style={styles.sectionTitle}>Your Saved Styles</Text>
             <Text style={styles.sectionSubTitle}>Browse your saved styles</Text>
           </View> */}
-            <View style={styles.content}>
-              {data.map((item, index) => (
-                <StyleCard
-                  marginTop={index % 2 !== 0 ? hp(25) : hp(0) }
-                  // marginTop={index === 1 || index === 0 ? hp(0) : hp(25) }
-                  key={item.styleName}
-                  title={item.styleName}
-                  category={item.styleDescription}
-                  image={{uri: item.image}}
-                  onPress={() => navigation.navigate('Style', item)}
-                  onPressHeart={() => {}}
-                  // backgroundColor={generateColor()}
-                />
-              ))}
-            </View>
+          <View style={styles.content}>
+            {data.map((item, index) => (
+              <StyleCard
+                marginTop={index % 2 !== 0 ? hp(25) : hp(0)}
+                // marginTop={index === 1 || index === 0 ? hp(0) : hp(25) }
+                key={item.styleName}
+                title={item.styleName}
+                category={item.category.categoryName}
+                image={{uri: item.image}}
+                onPress={() => navigation.navigate('Style', item)}
+                onPressHeart={() => { }}
+              // backgroundColor={generateColor()}
+              />
+            ))}
+          </View>
         </View>
       </ScrollView>
+      {state.user.userType === 'admin' &&
+        <TouchableOpacity
+          style={styles.FAB}
+          onPress={() => { setAddStyleModal(true) }}>
+          <Ionicons name={'ios-add'} color={colors.primaryLighter} size={wp(50)} />
+        </TouchableOpacity>}
+      <AddStyleModal
+        isVisible={addStyleModal}
+        onPressCancel={() => setAddStyleModal(false)}
+      />
     </View>
   );
 }
@@ -145,7 +155,18 @@ export const styles = StyleSheet.create({
     marginHorizontal: wp(20),
     paddingBottom: hp(25),
     // backgroundColor: 'red'
-  }
+  },
+  FAB: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: wp(60),
+    height: wp(60),
+    borderRadius: 99999,
+    bottom: hp(50),
+    right: wp(20),
+    backgroundColor: colors.secondaryDarker,
+  },
 })
 
-export default Category;
+export default AllStyles;

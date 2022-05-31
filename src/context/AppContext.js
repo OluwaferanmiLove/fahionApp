@@ -8,6 +8,7 @@ const initialState = {
   loading: false,
   onBoarded: false,
   loggedin: false,
+  userType: null,
   user: {},
 }
 

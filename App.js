@@ -5,6 +5,9 @@ import FashionHouse from './src/navigation';
 import { useFonts } from 'expo-font';
 import { initializeApp } from "firebase/app";
 import AppContextProvider from './src/context/AppContext';
+import { ToastProvider } from 'react-native-toast-notifications';
+import { hp, wp } from './src/util/dimension';
+import { colors } from './src/constants/colors';
 
 export default function App() {
   LogBox.ignoreLogs(['Setting a timer']);
@@ -18,9 +21,7 @@ export default function App() {
     appId: "1:8948289888:web:457b3f74cff87e052ece05"
   };
 
-  // if (firebase.apps.length === 0) {
-    initializeApp(firebaseConfig);
-  // }
+  initializeApp(firebaseConfig);
 
   const [loaded] = useFonts({
     ApparelDisplayBold: require('./assets/fonts/Apparel-Display-Bold.ttf'),
@@ -30,7 +31,29 @@ export default function App() {
   
   return (
     <AppContextProvider>
-      <FashionHouse />
+      <ToastProvider
+          placement="top"
+          duration={2000}
+          // successColor="green"
+          // dangerColor="red"
+          // warningColor="orange"
+          // normalColor="#6610F2"
+          normalColor={colors.primaryLighter}
+          offsetTop={hp(40)}
+          // renderType={{
+          //   normal: (toast) => (
+          //     <Toast text={toast.message} bgColor="#6610F2" />
+          //   ),
+          //   danger: (toast) => (
+          //     <Toast text={toast.message} bgColor="#F83C33" />
+          //   ),
+          //   success: (toast) => (
+          //     <Toast text={toast.message} bgColor="#45D988" />
+          //   ),
+          // }}
+          swipeEnabled={true}>
+            <FashionHouse />
+          </ToastProvider>
     </AppContextProvider>
   );
 }

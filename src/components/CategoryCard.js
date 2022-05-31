@@ -5,9 +5,9 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { colors } from '../constants/colors';
 import { hp, wp } from '../util/dimension';
 
-function CategoryCard({marginTop, onPress, marginLeft, marginRight, image, category, onPressHeart, saved}) {
+function CategoryCard({marginTop, onPress, disabled, marginLeft, marginRight, image, category, onPressHeart, saved}) {
   return (
-    <TouchableOpacity onPress={onPress} style={{marginTop}}>
+    <TouchableOpacity onPress={onPress} style={{marginTop}} disabled={disabled}>
       <View style={[styles.main, {marginLeft, marginRight}]}>
         <View  style={styles.imageContainer}>
           <Image source={image} style={styles.image} />

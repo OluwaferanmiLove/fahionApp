@@ -25,11 +25,11 @@ function StyleCard({marginTop, onPress, marginLeft, marginRight, image, title, c
             numberOfLines={1}
             ellipsizeMode={'tail'}>{category}</Text>
         </View>
-        <View style={styles.heart}>
+        {/* <View style={styles.heart}>
           <TouchableOpacity onPress={onPressHeart}>
             <Ionicons name={saved ? 'heart' : 'heart-outline'} size={hp(30)} color={colors.secondary} />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </TouchableOpacity>
   );

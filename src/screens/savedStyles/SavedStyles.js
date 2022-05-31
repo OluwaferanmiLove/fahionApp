@@ -1,22 +1,40 @@
-import React from 'react';
-import { Platform, StyleSheet, Text, View, StatusBar, ScrollView, FlatList } from 'react-native';
+import React, {useContext} from 'react';
+import { Platform, StyleSheet, Text, View, StatusBar, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import CategoriesPill from '../../components/CategoriesPill';
 import CategoryCard from '../../components/CategoryCard';
 import StyleCard from '../../components/StyleCard';
 import { colors } from '../../constants/colors';
 import { categories, stylesList } from '../../constants/mockData';
+import { logout } from '../../context/action';
+import { AppContext } from '../../context/AppContext';
 import { hp, wp } from '../../util/dimension';
 import { generateColor } from '../../util/randomColor';
+import { deleteFromStorage } from '../../util/storageUtil';
 
 let statusBarHeight = Platform.select({ios: hp(45), android: StatusBar.currentHeight});
 function SavedStyles() {
+  const {dispatch} = useContext(AppContext);
+
+  const handleLogOut = () => {
+    deleteFromStorage('userData')
+      .then((response) => {
+        dispatch(logout())
+        // dispatch(resetState())
+      })
+  }
+
   return (
     <View style={styles.main}>
       <StatusBar barStyle={'dark-content'} />
       <ScrollView style={{flex: 1}}>
         <View style={styles.header}>
-          <Text style={styles.title}>Your Saved Styles</Text>
-          <Text style={styles.description}>Your personal saved styles.</Text>
+          <View>
+            <Text style={styles.title}>Your Saved Styles</Text>
+            <Text style={styles.description}>Your personal saved styles.</Text>
+          </View>
+          <TouchableOpacity onPress={handleLogOut}>
+            <Text style={{fontSize: wp(18), color: colors.primaryLighter}}>Logout</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.categoriesCarousel}>
           <View  style={styles.sectionTitleContainer}>
@@ -90,6 +108,9 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.mainBg
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingTop: hp(55),
     paddingHorizontal: wp(20),
     width: wp(375),

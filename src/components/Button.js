@@ -5,26 +5,28 @@ import { hp, wp } from '../util/dimension';
 
 function Button({
   title,
+  marginTop,
+  dark,
   loading = false,
   outlined = false,
   onPress,
   style,
-  width = wp(320),
-  height = hp(48),
+  width = wp(335),
+  height = hp(50),
   borderRadius = wp(6),
-  fontSize = wp(16),
+  fontSize = wp(18),
   fontWeight = '500',
   disabled,
 }) {
-  const backgroundColor = outlined ? '#ffffff00' : disabled ? colors.grey : colors.secondary;
-  const titleColor = outlined ? '#ffffff' :  disabled ? colors.secondary : colors.primary;
+  const backgroundColor = outlined ? '#ffffff00' : disabled ? colors.grey : dark ? colors.primary : colors.secondary;
+  const titleColor = outlined ? '#ffffff' :  disabled ? colors.secondary : dark ? colors.secondary : colors.primary;
   const borderWidth = outlined ? wp(1) : 0;
 
   return (
-    <TouchableOpacity onPress={onPress} disabled={disabled ? disabled : loading}>
+    <TouchableOpacity onPress={onPress} disabled={disabled ? disabled : loading} style={{marginTop}}>
       <View style={[styles.main, { backgroundColor, borderWidth, width, height, borderRadius }, style]}>
         {loading ? (
-          <ActivityIndicator size={'large'} color={colors.text.black} />
+          <ActivityIndicator size={'small'} color={titleColor} />
         ) : (
           <Text style={[styles.title, { color: titleColor, fontWeight, fontSize }]}>
             {title}

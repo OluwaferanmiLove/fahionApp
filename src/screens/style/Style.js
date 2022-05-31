@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
 import { Platform, StyleSheet, Text, View, StatusBar, ScrollView, FlatList, TouchableOpacity } from 'react-native';
 import CategoriesPill from '../../components/CategoriesPill';
 import CategoryCard from '../../components/CategoryCard';
@@ -12,14 +12,26 @@ import ImageListCarousel from './components/ImageListCarousel';
 import ImageView from "react-native-image-viewing";
 
 let statusBarHeight = Platform.select({ios: hp(45), android: StatusBar.currentHeight});
-function Style({navigation}) {
+function Style({navigation, route}) {
   const [visible, setIsVisible] = useState(false);
+  const [images, setImages] = useState([]);
   const [imageIndex, setImageIndex] = useState(0);
+
+  const styleInfo = route.params;
+  // console.log(styleInfo.images);
 
   const handleViewImage = (index) => {
     setImageIndex(index);
     setIsVisible(true);
   }
+
+  useEffect(() => {
+    let newImageArray = styleInfo.images.map((item) => (
+      {uri: item}
+    ))
+
+    setImages(newImageArray);
+  }, [])
 
   return (
     <View style={styles.main}>
@@ -31,16 +43,16 @@ function Style({navigation}) {
               <Ionicons name={'arrow-back'} color={colors.secondaryDarker} size={wp(30)} />
             </View>
           </TouchableOpacity>
-          <View style={{marginLeft: wp(15)}}>
-            <Text style={styles.title}>Style Name</Text>
-            <Text style={styles.description}>Style description.</Text>
+          <View style={{marginLeft: wp(15), flex: 1}}>
+            <Text style={styles.title}>{styleInfo.styleName}</Text>
+            <Text style={styles.description}>{styleInfo.styleDescription}</Text>
           </View>
         </View>
         <View style={styles.sectionStyles}>
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={styleContent.pictures}
+            data={images}
             scrollEnabled
             pagingEnabled
             snapToAlignment={'center'}
@@ -49,7 +61,7 @@ function Style({navigation}) {
             style={styles.slides}
             renderItem={({ item , index}) => (
               <ImageListCarousel
-                image={item}
+                image={{uri: item.uri}}
                 onPress={() => handleViewImage(index)}
                 // backgroundColor={generateColor()}
               />
@@ -57,18 +69,19 @@ function Style({navigation}) {
           />
         </View>
         <View  style={styles.sectionTitleContainer}>
-          <Text style={styles.sectionTitle}>Similar categories</Text>
-          <Text style={styles.sectionSubTitle}>Other related categories</Text>
+          <Text style={styles.sectionTitle}>Category</Text>
+          <Text style={styles.sectionSubTitle}>Category of the style</Text>
           <View style={styles.similarCategories}>
-            {styleContent.similarCategories.map((item) => (
+            <CategoriesPill backgroundColor={generateColor()} category={styleInfo.category.categoryName} marginTop={hp(15)} />
+            {/* {styleContent.similarCategories.map((item) => (
               <CategoriesPill backgroundColor={generateColor()} category={item} marginTop={hp(15)} />
-            ))}
+            ))} */}
           </View>
         </View>
       </ScrollView>
       <ImageView
-        images={styleContent.pictures}
-        imageIndex={imageIndex}
+        images={images}
+        // imageIndex={imageIndex}
         visible={visible}
         onRequestClose={() => setIsVisible(false)}
         swipeToCloseEnabled={false}
@@ -89,7 +102,7 @@ export const styles = StyleSheet.create({
     bottom: hp(0),
     zIndex: 9999,
     flexDirection: 'row',
-    alignItems: 'center',
+    // alignItems: 'center',
     paddingTop: hp(55),
     paddingHorizontal: wp(20),
     width: wp(375),

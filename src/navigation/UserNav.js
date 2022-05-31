@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {Platform, Text} from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
+  AdminCategories,
+  AdminDashboard,
   AdminLogin,
+  AllStyles,
   Categories,
   Category,
   Home,
+  Login,
   OnBoarding,
   SavedStyles,
+  Signup,
   Style
 } from '../screens';
 import { AntDesign, Foundation, Ionicons } from '@expo/vector-icons';
@@ -16,10 +21,40 @@ import { colors } from '../constants/colors';
 import { fontFamily } from '../constants/fontFamily';
 import { hp, wp } from '../util/dimension';
 import AdminNav from './AdminNav';
-
+import { AppContext } from '../context/AppContext';
 
 const Stack = createStackNavigator();
+const AuthStack = createStackNavigator();
 const HomeTab = createBottomTabNavigator();
+
+const AuthNav = () => {
+  const {state} = useContext(AppContext);
+
+  return (
+    <AuthStack.Navigator screenOptions={{
+      headerShown: false,
+      cardStyle: {
+        backgroundColor: colors.mainBg
+      }
+    }}>
+      {!state.loggedin ? (
+        <>
+          <AuthStack.Screen component={Login} name={'Login'} />
+          <AuthStack.Screen component={Signup} name={'Signup'} />
+        </>
+      ) : state.user.userType === 'admin' ? (
+        <>
+          <AuthStack.Screen component={AdminNav} name={'AdminNav'} />
+        </>
+      ) : (
+        <>
+          <AuthStack.Screen component={SavedStyles} name={'SavedStyles'} />
+          <AuthStack.Screen component={AllStyles} name={'AllStyles'} />
+        </>
+      )}
+    </AuthStack.Navigator>
+  )
+}
 
 const HomeNav = () => {
   return (
@@ -66,16 +101,17 @@ const HomeNav = () => {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.secondary,
       }} />
-      <HomeTab.Screen component={SavedStyles} name={'SavedStyles'} options={{
+      <HomeTab.Screen component={AuthNav} name={'AuthNav'} options={{
         tabBarIcon: ({focused, color, size}) => (
+          // <Ionicons name={focused ? 'ios-person' : 'ios-person-outline'} size={26} color={focused ? colors.primary : colors.secondary} />
           <Ionicons name={focused ? 'bookmarks' : 'bookmarks-outline'} size={26} color={focused ? colors.primary : colors.secondary} />
         )
       }} />
-      <HomeTab.Screen component={AdminNav} name={'AdminNav'} options={{
+      {/* <HomeTab.Screen component={AdminNav} name={'AdminNav'} options={{
         tabBarIcon: ({focused, color, size}) => (
           <Ionicons name={focused ? 'bookmarks' : 'bookmarks-outline'} size={26} color={focused ? colors.primary : colors.secondary} />
         )
-      }} />
+      }} /> */}
     </HomeTab.Navigator>
   )
 }
@@ -93,9 +129,11 @@ export default function UserNav() {
         <Stack.Screen component={OnBoarding} name={'OnBoarding'} />
         <Stack.Screen component={HomeNav} name={"HomeNav"} />
         <Stack.Screen component={Categories} name={'Categories'} />
+        <Stack.Screen component={AdminCategories} name={'AdminCategories'} />
         <Stack.Screen component={Category} name={'Category'} />
         <Stack.Screen component={Style} name={'Style'} />
-        <Stack.Screen component={AdminLogin} name={'AdminLogin'} />
+        <Stack.Screen component={AllStyles} name={'AllStyles'} />
+        <Stack.Screen component={AdminNav} name={'AdminNav'} />
     </Stack.Navigator>
   );
 }

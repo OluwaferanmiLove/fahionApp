@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useContext} from 'react';
 import {View, FlatList, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { onBoardingData } from '../../constants/mockData';
@@ -6,9 +6,24 @@ import { hp, wp } from '../../util/dimension';
 import OnboardingView from './components/OnboardingView';
 import { colors } from '../../constants/colors';
 import Button from '../../components/Button';
+import { AppContext } from '../../context/AppContext';
+import { getFromStorage } from '../../util/storageUtil';
+import { login } from '../../context/action';
 
 function OnBoarding({navigation}) {
   const onboardingRef = React.useRef(null);
+
+  const {dispatch} = useContext(AppContext);
+
+  useEffect(() => {
+    getFromStorage('userData')
+    .then(res => {
+      if(res) {
+        dispatch(login(JSON.parse(res)));
+        navigation.navigate('HomeNav');
+      }
+    })
+  }, []);
 
   return (
     <View style={styles.main}>
@@ -31,14 +46,14 @@ function OnBoarding({navigation}) {
       />
       <View style={styles.floatingButton}>
         <Button title={'Get Started'} onPress={() => navigation.navigate('HomeNav')} />
-        <View style={{marginTop: hp(10)}}>
-          <TouchableOpacity onPress={() => navigation.navigate('AdminLogin')}>
+        {/* <View style={{marginTop: hp(10)}}>
+          <TouchableOpacity onPress={() => navigation.navigate('AdminNav')}>
             <Text
               style={{color: colors.secondary, fontSize: wp(16), fontWeight: 'bold'}}>
                 Are you an Admin, Login here
             </Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
     </View>
   )
